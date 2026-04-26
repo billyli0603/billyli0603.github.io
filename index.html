@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TopBMS Web V5.4 Ultimate (Final Polish)</title>
+    <title>TopBMS 遠端雲端監控系統</title>
     <style>
-        /* Cyberpunk Theme */
         :root {
             --bg: #000000; --panel: #0b1221; --border: #333;
             --text: #e0e0e0; --sub: #94a3b8;
@@ -15,116 +14,93 @@
             --info: #3b82f6;
         }
         body { font-family: 'Microsoft JhengHei', 'Consolas', monospace; background: var(--bg); color: var(--text); margin: 0; padding: 20px; font-size: 14px; display: flex; flex-direction: column; min-height: 100vh; box-sizing: border-box; }
-        
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 15px; margin-bottom: 15px; flex-shrink: 0; }
         .brand { font-size: 24px; font-weight: bold; color: white; letter-spacing: 2px; }
         .brand span { color: var(--success); }
-        .read-only-badge { background: #333; color: #aaa; font-size: 10px; padding: 2px 6px; border-radius: 4px; border: 1px solid #555; vertical-align: middle; margin-left: 10px;}
-
+        .read-only-badge { background: #3b82f6; color: #fff; font-weight: bold; font-size: 10px; padding: 2px 6px; border-radius: 4px; border: 1px solid #2563eb; vertical-align: middle; margin-left: 10px;}
         .controls { display: flex; gap: 10px; align-items: center; }
         .status-box { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #888; background: #111; padding: 5px 12px; border-radius: 4px; border: 1px solid #333; }
         .dot { width: 8px; height: 8px; border-radius: 50%; background: #555; }
         .dot.online { background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse 2s infinite; }
         .dot.error { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } }
-
         .ctrl-group { display: flex; align-items: center; background: #111; border: 1px solid #333; border-radius: 4px; padding: 2px 8px; }
         .ctrl-lbl { font-size: 12px; color: #888; margin-right: 5px; font-weight: bold; }
         .ctrl-input { background: transparent; border: none; color: white; width: 40px; text-align: center; font-family: Consolas; font-weight: bold; outline: none; }
-        
-        .btn { padding: 6px 15px; border-radius: 4px; border: 1px solid #333; background: #111; color: #ccc; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn { padding: 6px 15px; border-radius: 4px; border: 1px solid #333; background: #111; color: #ccc; cursor: pointer; font-weight: bold; transition: 0.2s; text-decoration: none; display: inline-block;}
         .btn:hover { border-color: var(--primary); color: white; }
         .btn-green { color: var(--success); border-color: var(--success); }
         .btn-green:hover { background: rgba(16,185,129,0.1); }
-        .btn-red { color: var(--danger); border-color: var(--danger); }
-
         .tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #111; padding: 5px; border-radius: 6px; flex-shrink: 0; }
         .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: #888; cursor: pointer; font-weight: bold; transition: 0.2s; border-radius: 4px; font-size: 15px; }
         .tab-btn.active { background: var(--info); color: #fff; }
         .tab-content { display: none; flex: 1; overflow-y: auto; flex-direction: column; } 
         .tab-content.active { display: flex; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity:0; transform: translateY(5px); } to { opacity:1; transform: translateY(0); } }
-
         .row { display: flex; gap: 20px; flex-wrap: wrap; height: 100%; }
         .col-left { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px;}
         .col-right { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 15px;}
-        
         .panel { background: var(--panel); border: 1px solid var(--border); padding: 15px; border-radius: 6px; margin-top: 25px; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .panel-title { position: absolute; top: -12px; left: 15px; background: var(--bg); padding: 0 8px; color: var(--success); font-weight: bold; font-size: 14px; border: 1px solid var(--border); border-radius: 4px; }
         .panel.fill { flex: 1; display: flex; flex-direction: column; }
-        
         .panel.danger { border-color: var(--danger); } .panel.danger .panel-title { color: var(--danger); }
         .panel.primary { border-color: var(--info); } .panel.primary .panel-title { color: var(--info); }
         .panel.success { border-color: var(--success); } .panel.success .panel-title { color: var(--success); }
-
         .soc-box { text-align: center; padding: 30px 0; border-bottom: 1px solid #222; margin-bottom: 20px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
         .soc-val { font-size: 80px; font-weight: bold; color: var(--success); line-height: 1; text-shadow: 0 0 20px rgba(16,185,129,0.2); }
-        
         .dash-items { flex: 1; display: flex; flex-direction: column; justify-content: center; }
         .dash-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px 15px; background: #161b2c; border-radius: 4px; }
         .dash-lbl { color: var(--title); font-size: 16px; font-weight: bold; }
         .dash-val { font-size: 26px; font-weight: bold; font-family: Consolas; }
         .c-warn { color: var(--warn); } .c-success { color: var(--success); }
-
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .info-cell { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #161b2c; border-radius: 4px; overflow: hidden; }
         .info-lbl { color: var(--title); font-size: 13px; white-space: nowrap; }
         .info-val { color: var(--primary); font-weight: bold; font-family: Consolas; font-size: 15px; }
-        
         .stat-badge { padding: 4px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; min-width: 60px; text-align: center; }
         .bg-green { background: rgba(16,185,129,0.2); color: var(--success); border: 1px solid var(--success); }
         .bg-blue { background: rgba(59,130,246,0.2); color: var(--info); border: 1px solid var(--info); }
         .bg-gray { background: #222; color: #666; border: 1px solid #444; }
-
         .cell-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; margin-top: 10px; flex: 1; overflow-y: auto; }
         .cell-box { background: #161b2c; border: 1px solid #333; padding: 5px; text-align: center; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px; }
         .cell-id { font-size: 12px; color: #fff; background: #d9534f; border-radius: 2px; display: inline-block; padding: 0 4px; align-self: center; }
         .bat-icon { width: 24px; flex: 1; border: 2px solid #fff; margin: 8px auto; position: relative; border-radius: 2px; }
         .bat-level { position: absolute; bottom: 1px; left: 1px; right: 1px; background: var(--success); transition: height 0.5s; }
         .cell-txt { color: var(--primary); font-family: Consolas; font-weight: bold; font-size: 13px; }
-
-        /* Alarm Grid (4 Cols) */
         .alarm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .alarm-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; background: #161b2c; border: 1px solid #333; border-radius: 4px; }
         .alarm-name { color: var(--title); font-size: 14px; }
-        
         .clr-btn { width: 100%; height: 100%; background: #222; border: 1px solid #444; color: #ccc; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .clr-btn:hover { background: #333; border-color: #666; color: #fff; }
-
-        /* Toolbar */
         .toolbar { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; background: #111; padding: 10px; border-radius: 4px; flex-wrap: wrap; }
         .t-lbl { color: #888; font-size: 13px; font-weight: bold; }
         .t-input { background: #222; border: 1px solid #444; color: white; padding: 5px; border-radius: 4px; font-family: Consolas; width: 130px; text-align: center; }
         .t-select { background: #222; border: 1px solid #444; color: white; padding: 5px; border-radius: 4px; }
-
-        /* Table */
         .table-container { flex: 1; overflow: auto; margin-top: 10px; border: 1px solid #333; border-radius: 4px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { text-align: center; padding: 10px; background: #222; color: #fff; border-bottom: 2px solid #444; font-weight: bold; position: sticky; top: 0; }
         td { padding: 8px; border-bottom: 1px solid #333; color: #ccc; text-align: center; }
         tr:nth-child(even) { background: #111; }
-
-        /* Params */
         .param-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .param-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
         .param-cell { background: #000; border: 1px solid #333; padding: 15px; text-align: center; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .p-lbl { color: var(--title); font-size: 14px; margin-bottom: 8px; display: block; width: 100%; text-align: left; padding-left: 10px; }
         .p-input-group { display: flex; align-items: center; justify-content: center; width: 100%; }
-        .p-input { background: #222; border: 1px solid #555; color: var(--primary); font-family: Consolas; font-size: 16px; font-weight: bold; width: 80px; text-align: center; padding: 5px; border-radius: 4px; cursor: not-allowed; }
+        .p-input { background: #222; border: 1px solid #555; color: var(--primary); font-family: Consolas; font-size: 16px; font-weight: bold; width: 80px; text-align: center; padding: 5px; border-radius: 4px; transition: 0.3s; cursor: not-allowed; }
         .p-unit { color: #888; font-size: 12px; margin-left: 5px; font-weight: bold; }
         
-        /* Switch */
         .sw-cell { text-align: center; padding: 15px; background: #161b2c; border-radius: 4px; }
         .sw-name { font-weight: bold; color: white; margin-bottom: 10px; font-size: 14px; }
-        .sw-led { width: 40px; height: 20px; border: 2px solid #fff; border-radius: 10px; margin: 10px auto; position: relative; background: #555; transition: 0.3s; }
+        .sw-state { color: #888; font-size: 12px; font-family: Consolas; font-weight: bold; }
+        .sw-led { width: 40px; height: 20px; border: 2px solid #fff; border-radius: 10px; margin: 10px auto; position: relative; background: #555; transition: 0.3s; cursor: pointer; }
         .sw-dot { width: 14px; height: 14px; background: #fff; border-radius: 50%; position: absolute; top: 1px; left: 2px; transition: 0.3s; }
         .sw-on .sw-led { background: var(--success); border-color: var(--success); }
         .sw-on .sw-dot { left: 20px; }
-
+        .sw-on .sw-state { color: var(--success); }
+        
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #111; }
         ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
-
         @media (max-width: 1000px) {
             .row { flex-direction: column; height: auto; }
             .col-left { width: 100%; }
@@ -134,9 +110,8 @@
     </style>
 </head>
 <body>
-
 <div class="header">
-    <div class="brand">TopBMS <span>WEB V5.4</span> <span class="read-only-badge">FINAL POLISH</span></div>
+    <div class="brand">TopBMS <span>WEB V6.7</span> <span class="read-only-badge" id="modeBadge">雲端唯讀模式</span></div>
     <div class="controls">
         <div class="status-box"><div class="dot" id="connDot"></div><span id="connStatus">Initializing...</span></div>
         <div class="ctrl-group"><span class="ctrl-lbl">S:</span><input type="number" class="ctrl-input" id="inp_s" value="16" onchange="initCells()"></div>
@@ -144,15 +119,12 @@
         <button class="btn btn-green" onclick="exportCSV()">EXPORT CSV</button>
     </div>
 </div>
-
 <div class="tabs">
     <div class="tab-btn active" onclick="showTab('tab1')">數據監控</div>
     <div class="tab-btn" onclick="showTab('tab2')">報警訊息</div>
     <div class="tab-btn" onclick="showTab('tab3')">參數設置</div>
     <div class="tab-btn" onclick="showTab('tab4')">常規設置</div>
 </div>
-
-<!-- TAB 1: Monitor -->
 <div id="tab1" class="tab-content active" style="height: calc(100vh - 150px);">
     <div class="row">
         <div class="col-left">
@@ -188,7 +160,7 @@
                     </div>
                 </div>
                 <div class="panel primary" style="flex:1">
-                    <div class="panel-title">狀態信息</div>
+                    <div class="panel-title">狀態信息 <span id="debug_flags" style="color: #666; font-size: 10px; margin-left: 5px;"></span></div>
                     <div class="grid-2">
                         <div class="info-cell"><span class="info-lbl">電池狀態</span><span class="stat-badge bg-blue" id="st_bat">待機</span></div>
                         <div class="info-cell"><span class="info-lbl">電池掉線</span><span class="stat-badge bg-green" id="st_off">正常</span></div>
@@ -208,14 +180,10 @@
         </div>
     </div>
 </div>
-
-<!-- TAB 2: Alarms -->
 <div id="tab2" class="tab-content" style="height: calc(100vh - 150px);">
     <div class="panel danger" style="flex-shrink: 0;">
         <div class="panel-title">報警信息統計</div>
-        <div class="alarm-grid" id="alarmStats">
-            <!-- JS Generated (11 items) -->
-        </div>
+        <div class="alarm-grid" id="alarmStats"></div>
     </div>
     <div class="panel fill">
         <div class="panel-title">日誌信息 (Session Log)</div>
@@ -231,8 +199,6 @@
         </div>
     </div>
 </div>
-
-<!-- TAB 3: Params (Read Only) -->
 <div id="tab3" class="tab-content">
     <div class="panel primary">
         <div class="panel-title">電壓保護設置</div>
@@ -243,8 +209,6 @@
         <div class="param-grid-4" id="paramMix"></div>
     </div>
 </div>
-
-<!-- TAB 4: General (Read Only) -->
 <div id="tab4" class="tab-content">
     <div class="panel success">
         <div class="panel-title">電池信息</div>
@@ -255,45 +219,34 @@
         <div class="param-grid-4" id="genSwitch"></div>
     </div>
 </div>
-
 <script>
-    // Config
     const DB_URL = "https://tlbt-monitor-default-rtdb.asia-southeast1.firebasedatabase.app";
     const DEVICE_ID = "BW16_TopBMS_01";
     const AUTH = "Km2trPM22lnn1fj4MlGGSwcb6RtioUJeOiKkcGd7";
     const DATA_URL = `${DB_URL}/readings/${DEVICE_ID}.json?auth=${AUTH}`;
 
-    // Layout
     const ALARMS = ["充電MOS故障", "放電MOS管故障", "電池掉線", "充電保護失效", "放電保護失效", "電池超溫", "充電過流", "放電過流", "功率板超溫", "低容量報警", "過流次數超限"];
     const P_VOLT = ["p_ov", "p_uv", "p_fail_high", "p_fail_low", "p_ov_rel", "p_uv_rel"];
     const P_MIX = ["p_coc", "p_coc_delay", "p_doc", "p_doc_delay", "p_pcb_ot", "p_pcb_ot_rel", "p_bal_ot", "p_bal_ot_rel", "p_cot", "p_cot_rel", "p_cut", "p_cut_rel", "p_diff", "curr_cal", "prot_delay", "heat_temp"];
     const P_GEN = ["cap_set", "series_set", "bal_pct", "low_cap", "bal_prec", "tot_dsg", "bal_start", "cal_cap"];
     
-    // [FIX] Correct Switch Names
-    const SW_NAMES = ["充電MOS管開關", "放電MOS管開關", "均衡開關", "專用充電器開關", "加熱關閉", "充電加熱", "放電加熱", "充放電都加熱"];
+    // 加回缺少的四個加熱選項
+    const SW_DEFS = [
+        { name: "充電 MOS", key: "sw_charge" },
+        { name: "放電 MOS", key: "sw_discharge" },
+        { name: "均衡開關", key: "sw_balance" },
+        { name: "專用充電器", key: "sw_charger" },
+        { name: "加熱關閉", key: "sw_heat_off" },
+        { name: "充電加熱", key: "sw_heat_chg" },
+        { name: "放電加熱", key: "sw_heat_dsg" },
+        { name: "充放電都加熱", key: "sw_heat_all" }
+    ];
 
-    const LABELS = {
-        p_ov: "充電保護電壓", p_uv: "放電保護電壓", p_fail_high: "充電失效保護電壓", p_fail_low: "放電失效保護電壓",
-        p_ov_rel: "充電恢復電壓", p_uv_rel: "放電恢復電壓", p_coc: "充電電流保護值", p_doc: "放電過流保護值",
-        p_coc_delay: "充電過流延時", p_doc_delay: "放電過流延時", 
-        p_pcb_ot: "功率板溫度保護值", p_pcb_ot_rel: "功率板溫度恢復值",
-        p_bal_ot: "均衡溫度保護值", p_bal_ot_rel: "均衡溫度恢復值",
-        p_cot: "電池高溫保護值", p_cot_rel: "電池高溫恢復值",
-        p_cut: "低溫保護值", p_cut_rel: "低溫保護恢復值",
-        p_diff: "壓差保護值", curr_cal: "電流校準", prot_delay: "均衡啟控電壓", heat_temp: "充電器電流設置",
-        cap_set: "電池容量設置", series_set: "電池串數設置", bal_pct: "均衡電流百分比", 
-        low_cap: "低容量報警值", bal_prec: "均衡精度", tot_dsg: "總放電容量", bal_start: "均衡啟控電壓", cal_cap: "電池校準容量"
-    };
-
-    const UNITS = {
-        p_ov: "mV", p_uv: "mV", p_fail_high: "mV", p_fail_low: "mV", p_ov_rel: "mV", p_uv_rel: "mV",
-        p_coc: "A", p_doc: "A", p_coc_delay: "S", p_doc_delay: "S",
-        p_pcb_ot: "°C", p_cot: "°C", p_cut: "°C", cap_set: "Ah", series_set: "S", bal_pct: "%",
-        low_cap: "%", bal_prec: "mV", tot_dsg: "Ah", bal_start: "mV", cal_cap: "Ah"
-    };
-
+    const LABELS = { p_ov: "充電保護電壓", p_uv: "放電保護電壓", p_fail_high: "充電失效保護電压", p_fail_low: "放电失效保护电压", p_ov_rel: "充电恢复电压", p_uv_rel: "放电恢复电压", p_coc: "充电电流保护值", p_doc: "放电过流保护值", p_coc_delay: "充电过流延时", p_doc_delay: "放电过流延时", p_pcb_ot: "功率板温度保护值", p_pcb_ot_rel: "功率板温度恢复值", p_bal_ot: "均衡温度保护值", p_bal_ot_rel: "均衡温度恢复值", p_cot: "电池高温保护值", p_cot_rel: "电池高温恢复值", p_cut: "低温保护值", p_cut_rel: "低温保护恢复值", p_diff: "压差保护值", curr_cal: "电流校准", prot_delay: "均衡启控电压", heat_temp: "专用充电器电流", cap_set: "电池容量设置", series_set: "电池串数设置", bal_pct: "均衡电流百分比", low_cap: "低容量报警值", bal_prec: "均衡精度", tot_dsg: "总放电容量", bal_start: "均衡启控电压", cal_cap: "电池校准容量" };
+    const UNITS = { p_ov: "mV", p_uv: "mV", p_fail_high: "mV", p_fail_low: "mV", p_ov_rel: "mV", p_uv_rel: "mV", p_coc: "A", p_doc: "A", p_coc_delay: "S", p_doc_delay: "S", p_pcb_ot: "°C", p_cot: "°C", p_cut: "°C", cap_set: "Ah", series_set: "S", bal_pct: "%", low_cap: "%", bal_prec: "mV", tot_dsg: "Ah", bal_start: "mV", cal_cap: "Ah" };
+    
     let dataHistory = [];
-
+    
     function initCells() {
         const c = document.getElementById('cellContainer');
         if(!c) return;
@@ -310,62 +263,72 @@
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('date_start').value = today;
         document.getElementById('date_end').value = today;
-        
         const a = document.getElementById('alarmStats');
-        ALARMS.forEach((k, i) => {
-            a.innerHTML += `<div class="alarm-row"><span class="alarm-name">${k}</span><div><span class="stat-badge bg-green" id="alm_st_${i}">正常</span> <span style="color:#f59e0b; font-weight:bold; margin-left:5px" id="alm_cnt_${i}">0 次</span></div></div>`;
-        });
-        // Clear Btn as 12th item
+        ALARMS.forEach((k, i) => { a.innerHTML += `<div class="alarm-row"><span class="alarm-name">${k}</span><div><span class="stat-badge bg-green" id="alm_st_${i}">正常</span> <span style="color:#f59e0b; font-weight:bold; margin-left:5px" id="alm_cnt_${i}">0 次</span></div></div>`; });
         a.innerHTML += `<div class="alarm-row" style="background:transparent; border:none; padding:0;"><button class="clr-btn" onclick="resetData()">清除數據記錄</button></div>`;
-
         const mkInput = (id, list) => {
             const el = document.getElementById(id);
-            list.forEach(k => {
-                const l = LABELS[k] || k;
-                const unit = UNITS[k] || "";
-                el.innerHTML += `<div class="param-cell"><span class="p-lbl">${l}</span><div class="p-input-group"><input type="text" class="p-input" id="inp_${k}" value="--" disabled><span class="p-unit">${unit}</span></div></div>`;
-            });
+            list.forEach(k => { el.innerHTML += `<div class="param-cell"><span class="p-lbl">${LABELS[k]||k}</span><div class="p-input-group"><input type="text" class="p-input" id="inp_${k}" value="--" disabled><span class="p-unit">${UNITS[k]||""}</span></div></div>`; });
         };
-        mkInput('paramVolt', P_VOLT);
-        mkInput('paramMix', P_MIX);
-        mkInput('genInfo', P_GEN);
-
+        mkInput('paramVolt', P_VOLT); mkInput('paramMix', P_MIX); mkInput('genInfo', P_GEN);
+        
+        // 渲染所有開關，並綁定唯讀提示
         const sw = document.getElementById('genSwitch');
-        SW_NAMES.forEach((n, i) => {
-            sw.innerHTML += `<div class="sw-cell"><div class="sw-name">${n}</div><div class="sw-led" id="sw_${i}"><div class="sw-dot"></div></div></div>`;
+        sw.innerHTML = "";
+        SW_DEFS.forEach((def, i) => {
+            sw.innerHTML += `<div class="sw-cell"><div class="sw-name">${def.name}</div><div class="sw-led" id="sw_${i}" onclick="alert('⚠️ 雲端資料庫唯讀模式。\\n\\n無法遠端修改，請連線至單晶片 AP 操作。')"><div class="sw-dot"></div></div><div class="sw-state" id="sw_state_${i}">--</div></div>`;
         });
     }
 
     function setText(id, val) { const el=document.getElementById(id); if(el) el.innerText = val; }
-    function setClass(id, cls) { const el=document.getElementById(id); if(el) el.className = cls; }
+    
+    // 將「狀態信息」的文字與顏色綁定到新的開關數值
+    function setMos(id, state) { 
+        const el = document.getElementById(id); 
+        if(el) {
+            const on = Number(state) === 1;
+            el.innerText = on ? "開啟" : "關閉"; 
+            el.style.backgroundColor = on ? "rgba(16,185,129,0.2)" : "#222";
+            el.style.color = on ? "#10b981" : "#666";
+            el.style.borderColor = on ? "#10b981" : "#444";
+        }
+    }
 
+    // 將滑動開關的樣式綁定到新的開關數值，已修正父元素判斷邏輯
+    function setSwitchState(index, state) {
+        const el = document.getElementById(`sw_${index}`);
+        const stateEl = document.getElementById(`sw_state_${index}`);
+        if(!el || state === undefined || state === null) return;
+        const on = Number(state) === 1;
+        
+        if(on) {
+            el.parentElement.classList.add('sw-on');
+        } else {
+            el.parentElement.classList.remove('sw-on');
+        }
+        
+        if(stateEl) {
+            stateEl.innerText = on ? "ON" : "OFF";
+        }
+    }
+    
     async function fetchData() {
         try {
-            const res = await fetch(DATA_URL);
+            const sep = DATA_URL.includes('?') ? '&' : '?';
+            const res = await fetch(`${DATA_URL}${sep}_t=${Date.now()}`);
             const d = await res.json();
-            if(!d || d.error) {
-                setText('connStatus', "Offline");
-                setClass('connDot', 'dot error');
-                return;
-            }
-
-            setText('connStatus', "Online");
-            setClass('connDot', 'dot online');
-            setText('updateTime', new Date(d.timestamp).toLocaleTimeString());
-
+            if(!d || d.error) { setText('connStatus', "Offline"); document.getElementById('connDot').className = 'dot error'; return; }
+            setText('connStatus', "Online"); document.getElementById('connDot').className = 'dot online';
+            
             if(d.info) {
                 dataHistory.push({t: new Date().toLocaleString(), v: d.info.volt, c: d.info.curr, soc: d.info.soc});
-                setText('val_soc', d.info.soc);
-                setText('val_v', d.info.volt.toFixed(2));
-                setText('val_c', d.info.curr.toFixed(1));
-                setText('val_p', (d.info.volt * d.info.curr).toFixed(1));
-                
-                let st = "待機", cls = "stat-badge bg-blue";
-                if(d.info.curr > 0.5) { st="充電"; cls="stat-badge bg-green"; }
-                else if(d.info.curr < -0.5) { st="放電"; cls="stat-badge bg-green"; }
-                setText('st_bat', st); setClass('st_bat', cls);
+                setText('val_soc', d.info.soc); setText('val_v', d.info.volt.toFixed(2)); setText('val_c', d.info.curr.toFixed(1)); setText('val_p', Math.abs(d.info.volt * d.info.curr).toFixed(1));
+                let st = "待機", cls = "rgba(59,130,246,0.2)", col = "#3b82f6";
+                if(d.info.curr > 0.5) { st="充電"; cls="rgba(16,185,129,0.2)"; col="#10b981"; } else if(d.info.curr < -0.5) { st="放電"; cls="rgba(16,185,129,0.2)"; col="#10b981"; }
+                const batEl = document.getElementById('st_bat');
+                if(batEl) { batEl.innerText = st; batEl.style.backgroundColor = cls; batEl.style.color = col; batEl.style.borderColor = col; }
             }
-
+            
             if(d.cells) {
                 let max=0, min=99, valid=[];
                 const s_limit = document.getElementById('inp_s').value;
@@ -373,95 +336,56 @@
                     if(i >= s_limit) return;
                     const box = document.getElementById(`cell_box_${i}`);
                     if(box) {
-                        if(v > 0.1 && v < 5.0) {
-                            box.style.display = "flex";
-                            setText(`val_${i}`, v.toFixed(3));
-                            const bar = document.getElementById(`bar_${i}`);
-                            if(bar) bar.style.height = Math.min(100, (v-2.5)*100) + "%";
-                            valid.push(v);
-                        } else {
-                            box.style.display = "none";
-                        }
+                        if(v > 0.1 && v < 5.0) { box.style.display = "flex"; setText(`val_${i}`, v.toFixed(3)); const bar = document.getElementById(`bar_${i}`); if(bar) bar.style.height = Math.min(100, (v-2.5)*100) + "%"; valid.push(v); } else { box.style.display = "none"; }
                     }
                 });
-                if(valid.length) {
-                    max = Math.max(...valid); min = Math.min(...valid);
-                    setText('v_max', max.toFixed(3) + " V");
-                    setText('v_min', min.toFixed(3) + " V");
-                    setText('v_diff', (max-min).toFixed(3) + " V");
-                }
+                if(valid.length) { max = Math.max(...valid); min = Math.min(...valid); setText('v_max', max.toFixed(3) + " V"); setText('v_min', min.toFixed(3) + " V"); setText('v_diff', (max-min).toFixed(3) + " V"); }
             }
-
-            if(d.temps) {
-                const t = d.temps;
-                setText('t_max', Math.max(...t) + " °C");
-                setText('t_min', Math.min(...t) + " °C");
-                setText('t_pcb', t[0] + " °C");
-                setText('t_bal', t[1] + " °C");
-            }
-
+            
+            if(d.temps) { const t = d.temps; setText('t_max', Math.max(...t) + " °C"); setText('t_min', Math.min(...t) + " °C"); setText('t_pcb', t[0] + " °C"); setText('t_bal', t[1] + " °C"); }
+            
             if(d.flags) {
-                const m = d.flags.mos;
-                setMos('st_mos_c', m&1);
-                setMos('st_mos_d', (m>>1)&1);
-                setMos('st_bal', (m>>2)&1);
-                
-                setSw('sw_0', m&1);
-                setSw('sw_1', (m>>1)&1);
-                setSw('sw_2', (m>>2)&1);
+                setText('debug_flags', `(Raw MOS: ${d.flags.mos})`);
             }
-
+            
             if(d.raw_params) {
                 const p = d.raw_params;
                 for(const key in p) {
                     const el = document.getElementById(`inp_${key}`);
-                    if(el) {
-                        let val = p[key];
-                        if(["p_coc", "p_doc", "curr_cal", "heat_temp", "cap_set", "tot_dsg", "cal_cap"].includes(key)) val /= 10;
-                        if(["p_pcb_ot", "p_bal_ot", "p_cot", "p_cut"].some(k => key.includes(k))) val -= 40;
+                    if(el) { 
+                        let val = p[key]; 
+                        if(["p_coc", "p_doc", "curr_cal", "heat_temp", "cap_set", "cal_cap"].includes(key)) val /= 10; 
+                        if(["p_pcb_ot", "p_bal_ot", "p_cot", "p_cut"].some(k => key.includes(k))) val -= 40; 
                         el.value = val;
                     }
-                    if (key === 'p_cut_rel') {
-                         const elDsg = document.getElementById('inp_tot_dsg');
-                         if (elDsg) elDsg.value = (p[key] / 10).toFixed(1);
+                    if (key === 'p_cut_rel') { 
+                        const elDsg = document.getElementById('inp_tot_dsg'); 
+                        if (elDsg) elDsg.value = (p[key] / 10).toFixed(1); 
                     }
                 }
+                
+                // 套用狀態至 8 個按鈕
+                setSwitchState(0, p.sw_charge);
+                setSwitchState(1, p.sw_discharge);
+                setSwitchState(2, p.sw_balance);
+                setSwitchState(3, p.sw_charger);
+                setSwitchState(4, p.sw_heat_off);
+                setSwitchState(5, p.sw_heat_chg);
+                setSwitchState(6, p.sw_heat_dsg);
+                setSwitchState(7, p.sw_heat_all);
+
+                setMos('st_mos_c', p.sw_charge);
+                setMos('st_mos_d', p.sw_discharge);
             }
         } catch(e) { console.error(e); }
     }
 
-    function setMos(id, state) {
-        setText(id, state ? "開啟" : "關閉");
-        setClass(id, state ? "stat-badge bg-green" : "stat-badge bg-gray");
-    }
-
-    function setSw(id, state) {
-        const el = document.getElementById(id);
-        if(el) {
-            if(state) el.parentElement.classList.add('sw-on');
-            else el.parentElement.classList.remove('sw-on');
-        }
-    }
-
-    function showTab(id) {
-        document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        event.target.classList.add('active');
-    }
-
-    function exportCSV() {
-        if(!dataHistory.length) return alert("No Data");
-        // BOM for Excel (UTF-8)
-        let csv = "\uFEFFTime,Volt,Curr,SOC\n" + dataHistory.map(r => `${r.t},${r.v},${r.c},${r.soc}`).join("\n");
-        const url = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
-        const a = document.createElement('a'); a.href=url; a.download=`TopBMS_Log_${Date.now()}.csv`; a.click();
-    }
+    function showTab(id) { document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active')); document.getElementById(id).classList.add('active'); event.target.classList.add('active'); }
+    function exportCSV() { if(!dataHistory.length) return alert("無資料可匯出"); let csv = "\uFEFFTime,Volt,Curr,SOC\n" + dataHistory.map(r => `${r.t},${r.v},${r.c},${r.soc}`).join("\n"); const url = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'})); const a = document.createElement('a'); a.href=url; a.download=`TopBMS_Log_${Date.now()}.csv`; a.click(); }
+    function resetData() { dataHistory=[]; alert("資料已清除"); }
     
-    function resetData() { dataHistory=[]; alert("Reset OK"); }
-
-    init();
-    setInterval(fetchData, 2000);
+    init(); 
+    setInterval(fetchData, 2000); 
     fetchData();
 </script>
 </body>
