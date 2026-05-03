@@ -68,9 +68,12 @@
         .bat-icon { width: 24px; flex: 1; border: 2px solid #fff; margin: 8px auto; position: relative; border-radius: 2px; }
         .bat-level { position: absolute; bottom: 1px; left: 1px; right: 1px; background: var(--success); transition: height 0.5s; }
         .cell-txt { color: var(--primary); font-family: Consolas; font-weight: bold; font-size: 13px; }
-        .alarm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .alarm-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; background: #161b2c; border: 1px solid #333; border-radius: 4px; }
-        .alarm-name { color: var(--title); font-size: 14px; }
+        .alarm-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+        .alarm-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; min-width: 0; padding: 8px 15px; background: #161b2c; border: 1px solid #333; border-radius: 4px; }
+        .alarm-name { color: var(--title); font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
+        .alarm-meta { display: grid; grid-template-columns: auto minmax(42px, auto); gap: 8px; align-items: center; justify-content: end; }
+        .alarm-count { color: var(--warn); font-weight: bold; min-width: 42px; text-align: right; white-space: nowrap; }
+        .alarm-clear-row { display: block; }
         .clr-btn { width: 100%; height: 100%; background: #222; border: 1px solid #444; color: #ccc; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .clr-btn:hover { background: #333; border-color: #666; color: #fff; }
         .toolbar { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; background: #111; padding: 10px; border-radius: 4px; flex-wrap: wrap; }
@@ -109,7 +112,7 @@
             .row { flex-direction: column; height: auto; }
             .col-left { width: 100%; }
             .param-grid-4 { grid-template-columns: 1fr 1fr; }
-            .alarm-grid { grid-template-columns: 1fr 1fr; }
+            .alarm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
         @media (max-width: 720px) {
             html,
@@ -171,7 +174,7 @@
                 padding: 4px 8px;
             }
 
-            .btn-green {
+            .controls .btn-green {
                 grid-column: 1 / -1;
                 text-align: center;
             }
@@ -182,6 +185,18 @@
                 gap: 5px;
                 padding: 5px;
                 margin-bottom: 14px;
+            }
+
+            .tab-content,
+            .row,
+            .col-left,
+            .col-right,
+            .panel,
+            .toolbar,
+            .table-container {
+                box-sizing: border-box;
+                max-width: 100%;
+                min-width: 0;
             }
 
             .tab-btn {
@@ -198,6 +213,62 @@
                 height: auto !important;
             }
 
+            #tab2 {
+                overflow: visible;
+            }
+
+            #tab2 .panel {
+                box-sizing: border-box;
+                width: 100%;
+            }
+
+            #tab2 .panel.fill {
+                flex: none;
+                overflow: visible;
+            }
+
+            #tab2 .table-container {
+                max-width: 100%;
+                overflow-x: hidden;
+                overflow-y: visible;
+            }
+
+            #tab2 table {
+                width: 100%;
+                min-width: 0;
+                table-layout: fixed;
+            }
+
+            #tab2 th,
+            #tab2 td {
+                white-space: normal;
+                overflow-wrap: anywhere;
+                padding: 8px 6px;
+            }
+
+            #tab2 .toolbar {
+                display: grid;
+                grid-template-columns: auto minmax(0, 1fr);
+                align-items: center;
+                gap: 8px;
+            }
+
+            #tab2 .toolbar .t-lbl {
+                justify-self: end;
+            }
+
+            #tab2 .toolbar .t-input,
+            #tab2 .toolbar .t-select {
+                box-sizing: border-box;
+                min-width: 0;
+                width: 100%;
+            }
+
+            #tab2 .toolbar .btn {
+                width: 100%;
+                text-align: center;
+            }
+
             body.log-tab-active {
                 overflow: auto;
             }
@@ -211,12 +282,33 @@
                 grid-column: 1 / -1;
             }
 
-            .btn-green {
+            .controls .btn-green {
                 grid-column: 1 / -1;
             }
 
             .tabs {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .alarm-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .alarm-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                padding: 10px;
+                align-content: start;
+            }
+
+            .alarm-meta {
+                grid-template-columns: minmax(64px, max-content) minmax(44px, 1fr);
+                justify-content: stretch;
+                width: 100%;
+            }
+
+            .alarm-count {
+                min-width: 44px;
             }
         }
     </style>
@@ -398,8 +490,8 @@
         document.getElementById('date_start').value = today;
         document.getElementById('date_end').value = today;
         const a = document.getElementById('alarmStats');
-        ALARMS.forEach((k, i) => { a.innerHTML += `<div class="alarm-row"><span class="alarm-name">${k}</span><div><span class="stat-badge bg-green" id="alm_st_${i}">正常</span> <span style="color:#f59e0b; font-weight:bold; margin-left:5px" id="alm_cnt_${i}">0 次</span></div></div>`; });
-        a.innerHTML += `<div class="alarm-row" style="background:transparent; border:none; padding:0;"><button class="clr-btn" onclick="resetData()">清除本頁暫存</button></div>`;
+        ALARMS.forEach((k, i) => { a.innerHTML += `<div class="alarm-row"><span class="alarm-name">${k}</span><div class="alarm-meta"><span class="stat-badge bg-green" id="alm_st_${i}">正常</span><span class="alarm-count" id="alm_cnt_${i}">0 次</span></div></div>`; });
+        a.innerHTML += `<div class="alarm-row alarm-clear-row" style="background:transparent; border:none; padding:0;"><button class="clr-btn" onclick="resetData()">清除本頁暫存</button></div>`;
         const mkInput = (id, list) => {
             const el = document.getElementById(id);
             list.forEach(k => { el.innerHTML += `<div class="param-cell"><span class="p-lbl">${LABELS[k]||k}</span><div class="p-input-group"><input type="text" class="p-input" id="inp_${k}" value="--" disabled><span class="p-unit">${UNITS[k]||""}</span></div></div>`; });
