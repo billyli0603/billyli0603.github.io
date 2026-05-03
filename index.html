@@ -111,6 +111,114 @@
             .param-grid-4 { grid-template-columns: 1fr 1fr; }
             .alarm-grid { grid-template-columns: 1fr 1fr; }
         }
+        @media (max-width: 720px) {
+            html,
+            body {
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+
+            body {
+                padding: 14px 12px 18px;
+                min-height: 100dvh;
+            }
+
+            .header {
+                display: block;
+                padding-bottom: 12px;
+                margin-bottom: 12px;
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-bottom: 12px;
+                font-size: clamp(22px, 6vw, 28px);
+                line-height: 1.2;
+                letter-spacing: 1px;
+                word-break: keep-all;
+            }
+
+            .read-only-badge {
+                margin-left: 0;
+                white-space: nowrap;
+            }
+
+            .controls {
+                display: grid;
+                grid-template-columns: minmax(110px, 1fr) minmax(66px, auto) minmax(78px, auto);
+                gap: 8px;
+                width: 100%;
+                align-items: stretch;
+            }
+
+            .status-box,
+            .ctrl-group,
+            .btn {
+                min-height: 36px;
+                box-sizing: border-box;
+            }
+
+            .status-box {
+                min-width: 0;
+                justify-content: center;
+            }
+
+            .ctrl-group {
+                justify-content: center;
+                padding: 4px 8px;
+            }
+
+            .btn-green {
+                grid-column: 1 / -1;
+                text-align: center;
+            }
+
+            .tabs {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 5px;
+                padding: 5px;
+                margin-bottom: 14px;
+            }
+
+            .tab-btn {
+                min-width: 0;
+                padding: 10px 4px;
+                font-size: clamp(13px, 3.5vw, 15px);
+                line-height: 1.2;
+                white-space: nowrap;
+                word-break: keep-all;
+            }
+
+            #tab1.tab-content,
+            #tab2.tab-content {
+                height: auto !important;
+            }
+
+            body.log-tab-active {
+                overflow: auto;
+            }
+        }
+        @media (max-width: 520px) {
+            .controls {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .status-box {
+                grid-column: 1 / -1;
+            }
+
+            .btn-green {
+                grid-column: 1 / -1;
+            }
+
+            .tabs {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
     </style>
 </head>
 <body>
